@@ -152,7 +152,7 @@
         "type": "comment",
         "z": "e556c8d0ce3bccd8",
         "name": "Doc",
-        "info": "Request comes with the json, we validate\nthe json and if in correct format,\nwe send it further to background worker\nfor further processing along with a quick\n202 response back to Requester",
+        "info": "Request comes with the json, we validate\nthe json and if in correct format,\nwe send it further to background worker\nfor further processing along with a quick\n202 response back to requester",
         "x": 70,
         "y": 120,
         "wires": []
