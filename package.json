@@ -1,0 +1,12 @@
+{
+    "name": "DataProcessing",
+    "description": "Receive mendix data via post endpoint, process it and send it back to another mendix post endpoint",
+    "version": "0.0.1",
+    "dependencies": {},
+    "node-red": {
+        "settings": {
+            "flowFile": "flows.json",
+            "credentialsFile": "flows_cred.json"
+        }
+    }
+}

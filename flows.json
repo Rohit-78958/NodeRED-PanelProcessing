@@ -1,0 +1,444 @@
+[
+    {
+        "id": "e556c8d0ce3bccd8",
+        "type": "tab",
+        "label": "Processing API",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6c01926821d02447",
+        "type": "tab",
+        "label": "Background Worker",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3f8a4eb187f312e8",
+        "type": "tab",
+        "label": "Configuration",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dd199cbc8c4b9db0",
+        "type": "http in",
+        "z": "e556c8d0ce3bccd8",
+        "name": "Mendix Request",
+        "url": "/process",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 180,
+        "wires": [
+            [
+                "a5f4441f3c97e63d"
+            ]
+        ],
+        "info": "post endpoint"
+    },
+    {
+        "id": "d7e2e614e5845d2f",
+        "type": "function",
+        "z": "e556c8d0ce3bccd8",
+        "name": "Validate Request",
+        "func": "// Read payload\nconst data = msg.payload;\n\n// Validation checks\nif (data.serialId === undefined) {\n    msg.statusCode = 400;\n    msg.payload = {\n        success: false,\n        message: \"serialId is required\"\n    };\n    return [null, msg];\n}\n\nif (!Array.isArray(data.Panels)) {\n    msg.statusCode = 400;\n    msg.payload = {\n        success: false,\n        message: \"Panels must be an array\"\n    };\n    return [null, msg];\n}\n\nif (data.PanelCount !== data.Panels.length) {\n    msg.statusCode = 400;\n    msg.payload = {\n        success: false,\n        message: \"PanelCount does not match Panels length\"\n    };\n    return [null, msg];\n}\n\nif (typeof data.thickness !== \"number\") {\n    msg.statusCode = 400;\n    msg.payload = {\n        success: false,\n        message: \"Thickness must be numeric\"\n    };\n    return [null, msg];\n}\n\n// Validation successful\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 180,
+        "wires": [
+            [
+                "36bd70222a2cf9a1",
+                "eae1b9a064c9ad2b"
+            ],
+            [
+                "2ae49b7b87745866"
+            ]
+        ],
+        "info": " - serial id should be there\r\n - data panels should be an array\r\n - panel count and array length should match\r\n - thickness should be a number"
+    },
+    {
+        "id": "194e047773205a62",
+        "type": "http response",
+        "z": "e556c8d0ce3bccd8",
+        "name": "202",
+        "statusCode": "",
+        "headers": {},
+        "x": 850,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "2ae49b7b87745866",
+        "type": "http response",
+        "z": "e556c8d0ce3bccd8",
+        "name": "400",
+        "statusCode": "",
+        "headers": {},
+        "x": 670,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "36bd70222a2cf9a1",
+        "type": "change",
+        "z": "e556c8d0ce3bccd8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \"success\": true, \"message\": \"Request accepted for processing\" }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 160,
+        "wires": [
+            [
+                "194e047773205a62"
+            ]
+        ],
+        "info": "return to caller"
+    },
+    {
+        "id": "a5f4441f3c97e63d",
+        "type": "json",
+        "z": "e556c8d0ce3bccd8",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "d7e2e614e5845d2f"
+            ]
+        ],
+        "info": "incase json string -> json object"
+    },
+    {
+        "id": "eae1b9a064c9ad2b",
+        "type": "link out",
+        "z": "e556c8d0ce3bccd8",
+        "name": "Background processing",
+        "mode": "link",
+        "links": [
+            "d7fe10a8f769ff57"
+        ],
+        "x": 635,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "37f6564a50b57eee",
+        "type": "comment",
+        "z": "e556c8d0ce3bccd8",
+        "name": "Doc",
+        "info": "Request comes with the json, we validate\nthe json and if in correct format,\nwe send it further to background worker\nfor further processing along with a quick\n202 response back to Requester",
+        "x": 70,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "d7fe10a8f769ff57",
+        "type": "link in",
+        "z": "6c01926821d02447",
+        "name": "link in 2",
+        "links": [
+            "eae1b9a064c9ad2b"
+        ],
+        "x": 95,
+        "y": 140,
+        "wires": [
+            [
+                "5125ae5d8310e2e1"
+            ]
+        ]
+    },
+    {
+        "id": "93658daf93def683",
+        "type": "debug",
+        "z": "6c01926821d02447",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "5125ae5d8310e2e1",
+        "type": "function",
+        "z": "6c01926821d02447",
+        "name": "Create Work Items",
+        "func": "const input = msg.payload;\n\nlet workItems = [];\n\nfor(let panel of input.Panels){\n\n    workItems.push({\n\n        serialId: input.serialId,\n\n        panel: panel,\n\n        thickness: input.thickness\n\n    });\n\n}\n\nmsg.payload = workItems;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 140,
+        "wires": [
+            [
+                "37f08e010bc2845d"
+            ]
+        ],
+        "info": "restructure the json for further panel wise processing"
+    },
+    {
+        "id": "37f08e010bc2845d",
+        "type": "split",
+        "z": "6c01926821d02447",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 410,
+        "y": 140,
+        "wires": [
+            [
+                "61bc1cd15f7cb1a1"
+            ]
+        ]
+    },
+    {
+        "id": "61bc1cd15f7cb1a1",
+        "type": "delay",
+        "z": "6c01926821d02447",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "30",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 580,
+        "y": 140,
+        "wires": [
+            [
+                "30c2234d7915d585"
+            ]
+        ],
+        "info": "process only 1 panel/ 30 second"
+    },
+    {
+        "id": "30c2234d7915d585",
+        "type": "function",
+        "z": "6c01926821d02447",
+        "name": "Find Thickness Rule",
+        "func": "const rules = global.get(\"thicknessRules\");\n\nconst thickness = msg.payload.thickness;\n\nlet selectedRule = null;\n\nfor(const rule of rules){\n\n    if(thickness >= rule.min &&\n       thickness < rule.max){\n\n        selectedRule = rule;\n\n        break;\n\n    }\n\n}\n\nif(selectedRule == null){\n\n    node.error(\"No matching thickness rule\");\n\n    return null;\n\n}\n\nmsg.rule = selectedRule;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 140,
+        "wires": [
+            [
+                "85020fc627d8013a"
+            ]
+        ]
+    },
+    {
+        "id": "85020fc627d8013a",
+        "type": "function",
+        "z": "6c01926821d02447",
+        "name": "Calculate Parameters",
+        "func": "const calculators = {\n\n    P1: (msg) => msg.payload.thickness * 10,\n\n    P2: (msg) => msg.payload.thickness * 20,\n\n    P3: (msg) => msg.payload.thickness * 30,\n\n    P4: (msg) => msg.payload.thickness * 40,\n\n    P5: (msg) => msg.payload.thickness * 50,\n\n    P6: (msg) => msg.payload.thickness * 60,\n\n    P7: (msg) => msg.payload.thickness * 70,\n\n    P8: (msg) => msg.payload.thickness * 80,\n\n    P9: (msg) => msg.payload.thickness * 90,\n\n    P10: (msg) => msg.payload.thickness * 100\n\n};\n\nconst calculated = {};\n\nfor (const parameter of msg.rule.parameters) {\n\n    if (calculators[parameter]) {\n\n        calculated[parameter] = calculators[parameter](msg);\n\n    }\n\n}\n\nmsg.parameters = calculated;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 220,
+        "wires": [
+            [
+                "49a3a0a8370f2b02"
+            ]
+        ],
+        "info": "calculations based on parameter"
+    },
+    {
+        "id": "49a3a0a8370f2b02",
+        "type": "function",
+        "z": "6c01926821d02447",
+        "name": "Build Output",
+        "func": "const result = {};\n\nresult.serialId = msg.payload.serialId;\n\nresult[msg.payload.panel] = msg.parameters;\n\nmsg.payload = result;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 220,
+        "wires": [
+            [
+                "0fc522746522163a"
+            ]
+        ]
+    },
+    {
+        "id": "0fc522746522163a",
+        "type": "http request",
+        "z": "6c01926821d02447",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.1.187:8000/process/result",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 730,
+        "y": 220,
+        "wires": [
+            [
+                "93658daf93def683"
+            ]
+        ]
+    },
+    {
+        "id": "af4d25ecf5e24c96",
+        "type": "catch",
+        "z": "6c01926821d02447",
+        "name": "",
+        "scope": [
+            "0fc522746522163a"
+        ],
+        "uncaught": false,
+        "x": 230,
+        "y": 440,
+        "wires": [
+            [
+                "29f64469374c11f3"
+            ]
+        ],
+        "info": "In case request node throws error"
+    },
+    {
+        "id": "29f64469374c11f3",
+        "type": "debug",
+        "z": "6c01926821d02447",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "1d1c3b4fd4263452",
+        "type": "comment",
+        "z": "6c01926821d02447",
+        "name": "Doc",
+        "info": "We create work items out of json,\nsplit based on number of panels,\nrate limit of 30 sec each then calculate\nparams for panel ids based on the rule \ndefined in config tab and build the output \nplus also catch if endpoint doesn't exist.",
+        "x": 130,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "20d1a014fe5441a5",
+        "type": "inject",
+        "z": "3f8a4eb187f312e8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "82675ac0a87faa0f"
+            ]
+        ]
+    },
+    {
+        "id": "82675ac0a87faa0f",
+        "type": "function",
+        "z": "3f8a4eb187f312e8",
+        "name": "Load Thickness Rules",
+        "func": "const rules = [\n\n    {\n        min: 0,\n        max: 1,\n\n        parameters: [\n            \"P1\",\n            \"P2\",\n            \"P3\"\n        ]\n    },\n\n    {\n        min: 1,\n        max: 3,\n\n        parameters: [\n            \"P4\",\n            \"P5\",\n            \"P6\",\n            \"P7\"\n        ]\n    },\n\n    {\n        min: 3,\n        max: 10,\n\n        parameters: [\n            \"P8\",\n            \"P9\",\n            \"P10\"\n        ]\n    }\n\n];\n\nglobal.set(\"thicknessRules\", rules);\n\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Rules Loaded\"\n});\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 160,
+        "wires": [
+            []
+        ],
+        "info": "parameters to process based on thickness ranges"
+    }
+]
