@@ -275,14 +275,15 @@
             [
                 "85020fc627d8013a"
             ]
-        ]
+        ],
+        "info": "min included but max not included when picking the rules"
     },
     {
         "id": "85020fc627d8013a",
         "type": "function",
         "z": "6c01926821d02447",
         "name": "Calculate Parameters",
-        "func": "// const calculators = {\n\n//     P1: (msg) => msg.payload.thickness * 10,\n\n//     P2: (msg) => msg.payload.thickness * 20,\n\n//     P3: (msg) => msg.payload.thickness * 30,\n\n//     P4: (msg) => msg.payload.thickness * 40,\n\n//     P5: (msg) => msg.payload.thickness * 50,\n\n//     P6: (msg) => msg.payload.thickness * 60,\n\n//     P7: (msg) => msg.payload.thickness * 70,\n\n//     P8: (msg) => msg.payload.thickness * 80,\n\n//     P9: (msg) => msg.payload.thickness * 90,\n\n//     P10: (msg) => msg.payload.thickness * 100\n\n// };\n\nfunction randomBetween(min, max) {\n    return +(Math.random() * (max - min) + min).toFixed(2);\n}\n\nconst calculators = {\n\n    P1: (thickness) => {\n\n        if (thickness >= 0 && thickness < 1)\n            return randomBetween(10, 20);\n\n        if (thickness >= 1 && thickness < 2)\n            return randomBetween(25, 35);\n\n        return null;\n    },\n\n    P2: (thickness) => {\n\n        if (thickness >= 0 && thickness < 0.8)\n            return randomBetween(100, 150);\n\n        if (thickness >= 0.8 && thickness < 3)\n            return randomBetween(180, 220);\n\n        return null;\n    },\n\n    P3: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P4: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P5: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P6: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P7: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P8: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    },\n\n    P9: (thickness) => {\n\n        if (thickness >= 0.5 && thickness < 1.5)\n            return randomBetween(500, 600);\n\n        if (thickness >= 1.5 && thickness <= 3)\n            return randomBetween(700, 800);\n\n        return null;\n    }\n\n};\n\nconst thickness = msg.payload.thickness;\nconst calculated = {};\n\nfor (const parameter of msg.rule.parameters) {\n\n    if (calculators[parameter]) {\n\n        calculated[parameter] = calculators[parameter](thickness);\n\n    }\n\n}\n\nmsg.parameters = calculated;\n\nreturn msg;",
+        "func": "function randomBetween(min, max) {\n    return +(Math.random() * (max - min) + min).toFixed(2);\n}\n\nfunction randomInt(min, max) {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n}\n\nfunction randomBit() {\n    return Math.floor(Math.random() * 2);\n}\n\nfunction calculate(def) {\n\n    switch (def.type) {\n\n        case \"randomFloat\":\n            return randomBetween(def.min, def.max);\n\n        case \"randomInt\":\n            return randomInt(def.min, def.max);\n\n        case \"randomBit\":\n            return randomBit();\n\n        case \"constant\":\n            return def.value;\n\n        default:\n            return null;\n    }\n\n}\n\nconst calculated = {};\n\n// msg.rule.parameters is now an object, not an array\nfor (const [parameter, definition] of Object.entries(msg.rule.parameters)) {\n\n    calculated[parameter] = calculate(definition);\n}\n\nmsg.parameters = calculated;\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -426,19 +427,20 @@
         "id": "82675ac0a87faa0f",
         "type": "function",
         "z": "3f8a4eb187f312e8",
-        "name": "Load Thickness Rules",
-        "func": "const rules = [\n\n    {\n        min: 0,\n        max: 1,\n\n        parameters: [\n            \"P1\",\n            \"P2\",\n            \"P3\"\n        ]\n    },\n\n    {\n        min: 1,\n        max: 3,\n\n        parameters: [\n            \"P4\",\n            \"P5\",\n            \"P6\",\n            \"P7\"\n        ]\n    },\n\n    {\n        min: 3,\n        max: 10,\n\n        parameters: [\n            \"P8\",\n            \"P9\",\n            \"P10\"\n        ]\n    }\n\n];\n\nglobal.set(\"thicknessRules\", rules);\n\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Rules Loaded\"\n});\n\nreturn null;",
+        "name": "Thickness rule",
+        "func": "const rules = [\n\n   {\n        min:0,\n        max:0.5,\n\n        parameters:{\n\n            P1:{\n                type:\"randomBit\"\n            },\n\n            P2:{\n                type:\"randomInt\",\n                min:0,\n                max:1\n            },\n\n            P3:{\n                type:\"constant\",\n                value:100\n            }\n\n        }\n\n    },\n\n    {\n        min:0.5,\n        max:1,\n\n        parameters:{\n\n            P2:{\n                type:\"randomFloat\",\n                min:10,\n                max:20\n            },\n\n            P3:{\n                type:\"randomInt\",\n                min:0,\n                max:1\n            },\n\n            P4:{\n                type:\"constant\",\n                value:100\n            },\n\n            P5:{\n                type:\"randomBit\"\n            }\n\n        }\n\n    }\n\n    // {\n    //     min: 1,\n    //     max: 3,\n\n    //     parameters: [\n    //         \"P4\",\n    //         \"P5\",\n    //         \"P6\",\n    //         \"P7\"\n    //     ]\n    // },\n\n    // {\n    //     min: 3,\n    //     max: 10,\n\n    //     parameters: [\n    //         \"P8\",\n    //         \"P9\",\n    //         \"P10\"\n    //     ]\n    // }\n\n];\n\nglobal.set(\"thicknessRules\", rules);\n\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Rules Loaded\"\n});\n\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 360,
+        "x": 275,
         "y": 160,
         "wires": [
             []
         ],
+        "l": false,
         "info": "parameters to process based on thickness ranges"
     }
 ]
