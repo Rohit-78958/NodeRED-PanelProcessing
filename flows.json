@@ -283,7 +283,7 @@
         "type": "function",
         "z": "6c01926821d02447",
         "name": "Calculate Parameters",
-        "func": "function randomBetween(min, max) {\n    return +(Math.random() * (max - min) + min).toFixed(2);\n}\n\nfunction randomInt(min, max) {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n}\n\nfunction randomBit() {\n    return Math.floor(Math.random() * 2);\n}\n\nfunction calculate(def) {\n\n    switch (def.type) {\n\n        case \"randomFloat\":\n            return randomBetween(def.min, def.max);\n\n        case \"randomInt\":\n            return randomInt(def.min, def.max);\n\n        case \"randomBit\":\n            return randomBit();\n\n        case \"constant\":\n            return def.value;\n\n        default:\n            return null;\n    }\n\n}\n\nconst calculated = {};\n\n// msg.rule.parameters is now an object, not an array\nfor (const [parameter, definition] of Object.entries(msg.rule.parameters)) {\n\n    calculated[parameter] = calculate(definition);\n}\n\nmsg.parameters = calculated;\n\nreturn msg;",
+        "func": "function randomBetween(min, max) {\n    return +(Math.random() * (max - min) + min).toFixed(3);\n}\n\nfunction randomInt(min, max) {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n}\n\nfunction randomBit() {\n    return Math.floor(Math.random() * 2);\n}\n\nfunction calculate(def) {\n\n    switch (def.type) {\n\n        case \"randomFloat\":\n            return randomBetween(def.min, def.max);\n\n        case \"randomInt\":\n            return randomInt(def.min, def.max);\n\n        case \"randomBit\":\n            return randomBit();\n\n        case \"constant\":\n            return def.value;\n\n        default:\n            return null;\n    }\n\n}\n\nconst calculated = {};\n\n// msg.rule.parameters is now an object, not an array\nfor (const [parameter, definition] of Object.entries(msg.rule.parameters)) {\n\n    calculated[parameter] = calculate(definition);\n}\n\nmsg.parameters = calculated;\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -315,7 +315,8 @@
         "y": 220,
         "wires": [
             [
-                "0fc522746522163a"
+                "0fc522746522163a",
+                "1703961fb8693838"
             ]
         ]
     },
@@ -395,6 +396,22 @@
         "wires": []
     },
     {
+        "id": "1703961fb8693838",
+        "type": "debug",
+        "z": "6c01926821d02447",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 320,
+        "wires": []
+    },
+    {
         "id": "20d1a014fe5441a5",
         "type": "inject",
         "z": "3f8a4eb187f312e8",
@@ -428,7 +445,7 @@
         "type": "function",
         "z": "3f8a4eb187f312e8",
         "name": "Thickness rule",
-        "func": "const rules = [\n\n   {\n        min:0,\n        max:0.5,\n\n        parameters:{\n\n            P1:{\n                type:\"randomBit\"\n            },\n\n            P2:{\n                type:\"randomInt\",\n                min:0,\n                max:1\n            },\n\n            P3:{\n                type:\"constant\",\n                value:100\n            }\n\n        }\n\n    },\n\n    {\n        min:0.5,\n        max:1,\n\n        parameters:{\n\n            P2:{\n                type:\"randomFloat\",\n                min:10,\n                max:20\n            },\n\n            P3:{\n                type:\"randomInt\",\n                min:0,\n                max:1\n            },\n\n            P4:{\n                type:\"constant\",\n                value:100\n            },\n\n            P5:{\n                type:\"randomBit\"\n            }\n\n        }\n\n    }\n\n    // {\n    //     min: 1,\n    //     max: 3,\n\n    //     parameters: [\n    //         \"P4\",\n    //         \"P5\",\n    //         \"P6\",\n    //         \"P7\"\n    //     ]\n    // },\n\n    // {\n    //     min: 3,\n    //     max: 10,\n\n    //     parameters: [\n    //         \"P8\",\n    //         \"P9\",\n    //         \"P10\"\n    //     ]\n    // }\n\n];\n\nglobal.set(\"thicknessRules\", rules);\n\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Rules Loaded\"\n});\n\nreturn null;",
+        "func": "const rules = [\n\n   {\n        min:1.6,\n        max:2,\n\n        parameters:{\n\n            conveyorSpeed:{\n                type:\"randomFloat\",\n                min:1.2,\n                max:1.8\n            },\n\n            brushPenetrationDepth:{\n                type:\"randomInt\",\n                min:0.03,\n                max:0.05\n            },\n\n            waterBlastPressure:{\n                type:\"randomFloat\",\n                min:1.5,\n                max:2\n            },\n\n            dryerTemperature:{\n                type:\"randomFloat\",\n                min:20,\n                max:25\n            },\n\n            waterLevel:{\n                type:\"randomBit\"\n            }\n\n        }\n\n    },\n\n    {\n        min:2.4,\n        max:3,\n\n        parameters:{\n\n            conveyorSpeed:{\n                type:\"randomFloat\",\n                min:1.0,\n                max:1.4\n            },\n\n            brushPenetrationDepth:{\n                type:\"randomInt\",\n                min:0.04,\n                max:0.06\n            },\n\n            waterBlastPressure:{\n                type:\"randomFloat\",\n                min:2.0,\n                max:2.5\n            },\n\n            dryerTemperature:{\n                type:\"randomFloat\",\n                min:20,\n                max:25\n            },\n\n            waterLevel:{\n                type:\"randomBit\"\n            }\n\n        }\n\n    }\n\n];\n\nglobal.set(\"thicknessRules\", rules);\n\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Rules Loaded\"\n});\n\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
