@@ -458,6 +458,6 @@
             []
         ],
         "l": false,
-        "info": "parameters to process based on thickness ranges"
+        "info": "station-parameters configuration\r\n`\r\nstationid:{rules:[{min, max, parameters:{}},{}]}\r\n`"
     }
 ]
