@@ -72,7 +72,7 @@
         "type": "http response",
         "z": "e556c8d0ce3bccd8",
         "name": "202",
-        "statusCode": "",
+        "statusCode": "202",
         "headers": {},
         "x": 850,
         "y": 160,
